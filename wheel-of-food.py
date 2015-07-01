@@ -27,6 +27,8 @@ class Wheel():
         self.TOKEN_SECRET = TOKEN_SECRET
         self.base_url = 'https://api.yelp.com/v2/search'
         self.food_categories = config['categories']
+        self.adjectives = config['adjectives']
+        self.foods = config['foods']
 
     def _gen_signed_url(self, url_params):
         """ Generate a signed URL to call using the token and consumer identifiers and their respective secrets.
@@ -62,9 +64,14 @@ class Wheel():
             self.category = self._select_food()
         else:
             self.category = category
-
+        
+        if random.choice([True, False]) == True:
+            toss_food = ", tossing {0} and {1} everywhere...".format(self.foods[random.randint(0, len(self.foods))], self.foods[random.randint(0, len(self.foods))])
+        else:
+            toss_food = "..."
+            
         print("You spin the Wheel of Food!")
-        print("The Wheel of Food spins wildly, tossing sandwiches and soups everywhere...")
+        print("The Wheel of Food spins {0}{1}".format(self.adjectives[random.randint(0, len(self.adjectives))], toss_food))
         print("The Wheel of Food comes to a halt, landing on {0}!".format(self.category.upper()))
         print("")
 

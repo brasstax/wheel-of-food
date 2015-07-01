@@ -4,17 +4,50 @@
     "TOKEN": "YOUR_TOKEN",
     "TOKEN_SECRET": "YOUR_TOKEN_SECRET",
     "categories": [
-        "Mexican",
-        "Japanese",
-        "Chinese",
-        "Indian",
-        "Burgers",
-        "American",
-        "Italian",
-        "Korean",
-        "African",
-        "Indonesian",
-        "Thai",
-        "Southern"
-    ]
+            "Mexican",
+            "Japanese",
+            "Chinese",
+            "Indian",
+            "Burgers",
+            "American",
+            "Italian",
+            "Korean",
+            "African",
+            "Indonesian",
+            "Thai",
+            "Southern"
+        ],
+    "adjectives": [
+            "crazily",
+            "wildly",
+            "insanely",
+            "madly",
+            "maniacally",
+            "psychotically",
+            "furiously",
+            "hysterically",
+            "intensely",
+            "violently",
+            "frantically"
+        ],
+    "foods": [
+            "sandwiches",
+            "soups",
+            "baguettes",
+            "coffee",
+            "hot chocolate",
+            "juice",
+            "tacos",
+            "potatoes",
+            "sushi",
+            "takoyaki",
+            "tomatoes",
+            "pizza",
+            "spaghetti",
+            "eggrolls",
+            "pho",
+            "dumplings",
+            "rice balls"
+        ]
+
 }
