@@ -3,7 +3,7 @@
 # Spin the wheel of food and figure out what you want for your next meal!
 
 import requests
-import oauth2
+from requests_oauthlib import OAuth1
 import logging
 import random
 import argparse
@@ -30,28 +30,15 @@ class Wheel():
         self.adjectives = config['adjectives']
         self.foods = config['foods']
 
-    def _gen_signed_url(self, url_params):
-        """ Generate a signed URL to call using the token and consumer identifiers and their respective secrets.
-        url_params contains extra parameters to pass to Yelp's API URL beyond the authentication stuff;
-        In our case, we're using it to pass along the type of food we want and our zip code.
-        returns: signed_url_string """
-        self.consumer = oauth2.Consumer(CONSUMER_KEY, CONSUMER_SECRET)
-        logging.debug(self.consumer)
-        self.request = oauth2.Request(method='GET', url = self.base_url, parameters = url_params)
-        logging.debug(self.request)
-        self.request.update(
-            {
-                'oauth_nonce': oauth2.generate_nonce(),
-                'oauth_timestamp': oauth2.generate_timestamp(),
-                'oauth_token': TOKEN,
-                'oauth_consumer_key': CONSUMER_KEY
-            }
-        )
-        logging.debug(self.request)
-        self.token = oauth2.Token(TOKEN, TOKEN_SECRET)
-        logging.debug(self.token)
-        self.request.sign_request(oauth2.SignatureMethod_HMAC_SHA1(), self.consumer, self.token)
-        return self.request.to_url()
+    def _gen_auth(self):
+        """ Generates an OAuth1 object using requests_oauthlib as the base.
+        Uses the consumer key/secret and token/secret, signs it, and returns an OAuth1 object for
+        the requests library to use as its auth method.  The signature is placed in the header;
+        by default, it is signed using HMAC_SHA1, which is what Yelp needs."""
+
+        auth = OAuth1(self.CONSUMER_KEY, self.CONSUMER_SECRET, self.TOKEN, self.TOKEN_SECRET,  signature_type='auth_header')
+        logging.debug(auth)
+        return auth
 
     def _select_food(self):
         """ Selects a random food category from the provided category list.
@@ -64,12 +51,12 @@ class Wheel():
             self.category = self._select_food()
         else:
             self.category = category
-        
+
         if random.choice([True, False]) == True:
             toss_food = ", tossing {0} and {1} everywhere...".format(self.foods[random.randint(0, len(self.foods))], self.foods[random.randint(0, len(self.foods))])
         else:
             toss_food = "..."
-            
+
         print("You spin the Wheel of Food!")
         print("The Wheel of Food spins {0}{1}".format(self.adjectives[random.randint(0, len(self.adjectives))], toss_food))
         print("The Wheel of Food comes to a halt, landing on {0}!".format(self.category.upper()))
@@ -79,9 +66,8 @@ class Wheel():
         if self.category == "GO HUNGRY" or self.category == "SPIN AGAIN":
             return
         url_params = {'location': location, 'term': self.category, 'radius_filter': distance, 'limit': '20', 'category_filter': 'food,restaurants'}
-        self.signed_url = self._gen_signed_url(url_params)
-        logging.debug(self.signed_url)
-        r = requests.get(self.signed_url)
+        auth = self._gen_auth()
+        r = requests.get(self.base_url, params=url_params, auth=auth)
         logging.debug(r.content)
         # If we passed proper authentication, we should be able to return a list of businesses.
         # Otherwise, we get the error and print it to the user.
